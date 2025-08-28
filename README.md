@@ -11,6 +11,7 @@ A powerful, adaptive Retrieval-Augmented Generation (RAG) system built with a de
 
 - [Architecture Overview](#architecture-overview)
 - [Key Features](#key-features)
+- [RAG Techniques and Innovations](#rag-techniques-and-innovations)
 - [Technology Stack](#technology-stack)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
@@ -46,11 +47,9 @@ flowchart TD
     DB[("Vector/Keyword DB\nfaiss.index, bm25.index")]
   end
 
-  %% Define connections between nodes
   U -- Sends Question --> GD
   GD -- HTTP POST /ask --> RagApp
   
-  %% Orchestrator Logic Flow
   RagApp -- "<b>1. Preprocess Request</b>" --> IA
   RagApp -- "<b>2. Generate HyDE</b>" --> IA
   RagApp -- "<b>3. Embed Texts</b>" --> IA
@@ -69,38 +68,54 @@ flowchart TD
   RagApp -. Streaming JSON .-> GD
   IA -. Final Answer Tokens .-> RagApp
 
-  %% Styling for Subgraphs (no rounding possible here)
+  %% Styling
+  style RagApp fill:#bbdefb,stroke:#1976d2,stroke-width:2px
+  style IA fill:#c8e6c9,stroke:#388e3c,stroke-width:2px
   style UI fill:#fffcf2,stroke:#808080,stroke-width:1px
-  style RAG fill:#e3f2fd,stroke:#1976d2,stroke-width:1px
   style INF fill:#e8f5e9,stroke:#388e3c,stroke-width:1px
+	style RAG fill:#e3f2fd,stroke:#1976d2,stroke-width:2px,color:#a185ff
 
-  %% Styling for Nodes (ADDING ROUNDED CORNERS HERE)
-  style GD rx:10px, ry:10px
-  style RagApp fill:#bbdefb,stroke:#1976d2,stroke-width:2px,rx:10px,ry:10px
-  style RAG_DB rx:10px, ry:10px
-  style IA fill:#c8e6c9,stroke:#388e3c,stroke-width:2px,rx:10px,ry:10px
-  style Models rx:10px, ry:10px
-  style DB rx:10px, ry:10px
 ```
 
 ## Key Features
 
 -   **Fully Decoupled Services**: Scale, develop, and deploy the UI, logic, and ML services independently.
 -   **Real-Time Streaming**: Delivers responses token-by-token for a dynamic and interactive user experience.
--   **Adaptive Context Strategy**: Intelligently builds the final context for the LLM by using a reranker score threshold and on-the-fly summarization for low-confidence results.
--   **Hybrid Search**: Merges results from dense vector search (FAISS) and keyword search (BM25) to ensure robust and comprehensive document retrieval.
--   **Clean API Design**: Uses Pydantic for data validation and a shared data models package for type-safe communication between services.
--   **Developer Friendly**: Comes with a script to automate the indexing and artifact generation process.
+-   **Adaptive Context Strategy**: Intelligently builds the final context for the LLM based on retrieval confidence.
+-   **Hybrid Search**: Combines dense and sparse retrieval methods for more robust and accurate results.
+-   **Clean API Design**: Uses Pydantic for data validation and a shared data models package for type-safe communication.
+
+## RAG Techniques and Innovations
+
+This engine employs a multi-stage RAG pipeline that incorporates several advanced techniques to enhance accuracy and relevance.
+
+-   **Query Expansion with HyDE (Hypothetical Document Embeddings)**
+    -   Before retrieval, the engine uses a smaller LLM to generate a hypothetical document that perfectly answers the user's question. Both the original query and this hypothetical document are embedded, significantly improving the semantic richness of the search query and leading to more relevant initial document retrieval.
+
+-   **Hybrid Search (Dense + Sparse Retrieval)**
+    -   The system does not rely on a single retrieval method. It combines the strengths of dense, semantic search (using **FAISS**) with traditional sparse, keyword-based search (using **BM25**). The results are merged to ensure that both semantic meaning and specific keywords (like acronyms or names) are captured.
+
+-   **Cross-Encoder Reranking**
+    -   The initial set of retrieved documents is passed through a powerful cross-encoder model. Unlike basic vector similarity, a cross-encoder directly compares the query and each document together, providing a much more accurate relevance score. This is a critical step to filter out noise and promote the best possible context for the LLM.
+
+-   **Adaptive Context Strategy (The Core Innovation)**
+    -   This is the "adaptive" part of the engine. Instead of naively stuffing all retrieved documents into the prompt, the `ContextBuilder` uses the top reranker score to make an intelligent decision:
+        -   **High Confidence:** If the top document's score is above a set threshold, the engine assumes high relevance and provides the LLM with a rich context from multiple top documents.
+        -   **Low Confidence (Summarization for Distillation):** If the score is below the threshold, the engine assumes the context might be noisy. It summarizes the top few documents to distill the key facts, providing a concise and factually-grounded context to the LLM while minimizing distraction.
+        -   **No Confidence (Rejection):** If the score is critically low, the engine provides no context at all, preventing the LLM from hallucinating based on irrelevant information and allowing it to inform the user that the question is out of scope.
 
 ## Technology Stack
 
-| Category      | Technology / Library                                                              |
-|---------------|-----------------------------------------------------------------------------------|
-| **Backend**   | FastAPI, Uvicorn, Pydantic, HTTPX, AIOFiles                                       |
-| **ML / AI**   | `llama-cpp-python`, Sentence Transformers, `mxbai-rerank`, `rank_bm25`, Transformers |
-| **Vector DB** | Faiss (Facebook AI Similarity Search)                                             |
-| **Frontend**  | Gradio                                                                            |
-| **Language**  | Python 3.9+                                                                       |
+This project is built with a modern stack of technologies, chosen for performance, scalability, and ease of development.
+
+| Category                  | Technology / Library                                                              | Purpose                                                               |
+|---------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| **Backend & API**         | `FastAPI`, `Uvicorn`                                                              | Building high-performance, asynchronous APIs for both services.       |
+| **AI / Machine Learning** | `llama-cpp-python`, `Sentence Transformers`, `mxbai-rerank`, `Transformers`       | Running the LLM, generating embeddings, and reranking documents.      |
+| **Vector & Keyword Search** | `Faiss`, `rank_bm25`                                                              | Performing efficient similarity search and keyword-based retrieval.   |
+| **Frontend / UI**         | `Gradio`                                                                          | Creating a rapid, interactive web interface for the chat application. |
+| **Data & Configuration**  | `Pydantic`, `pydantic-settings`                                                   | Data validation, type safety in APIs, and environment configuration.  |
+| **Communication**         | `HTTPX`                                                                           | Asynchronous HTTP client for communication between services.          |
 
 ## Getting Started
 
@@ -111,7 +126,6 @@ Follow these steps to get the project up and running on your local machine.
 -   Python 3.9 or higher
 -   Git
 -   Access to a terminal or command prompt
-
 ---
 
 ### 1. Clone & Configure
