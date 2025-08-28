@@ -15,10 +15,11 @@ A powerful, adaptive Retrieval-Augmented Generation (RAG) system built with a de
 - [Technology Stack](#technology-stack)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
-  - [1. Clone & Configure](#1-clone--configure)
-  - [2. Install Dependencies](#2-install-dependencies)
-  - [3. Build Search Artifacts](#3-build-search-artifacts)
-  - [4. Run the Application](#4-run-the-application)
+  - [1. Clone the Repository](#1-clone-the-repository)
+  - [2. Configure Your Environment](#2-configure-your-environment)
+  - [3. Install Dependencies](#3-install-dependencies)
+  - [4. Build Search Artifacts](#4-build-search-artifacts)
+  - [5. Run the Application](#5-run-the-application)
 - [Project Structure](#project-structure)
 - [Contributing](#contributing)
 - [License](#license)
@@ -74,7 +75,6 @@ flowchart TD
   style UI fill:#fffcf2,stroke:#808080,stroke-width:1px
   style INF fill:#e8f5e9,stroke:#388e3c,stroke-width:1px
 	style RAG fill:#e3f2fd,stroke:#1976d2,stroke-width:2px,color:#a185ff
-
 ```
 
 ## Key Features
@@ -89,20 +89,10 @@ flowchart TD
 
 This engine employs a multi-stage RAG pipeline that incorporates several advanced techniques to enhance accuracy and relevance.
 
--   **Query Expansion with HyDE (Hypothetical Document Embeddings)**
-    -   Before retrieval, the engine uses a smaller LLM to generate a hypothetical document that perfectly answers the user's question. Both the original query and this hypothetical document are embedded, significantly improving the semantic richness of the search query and leading to more relevant initial document retrieval.
-
--   **Hybrid Search (Dense + Sparse Retrieval)**
-    -   The system does not rely on a single retrieval method. It combines the strengths of dense, semantic search (using **FAISS**) with traditional sparse, keyword-based search (using **BM25**). The results are merged to ensure that both semantic meaning and specific keywords (like acronyms or names) are captured.
-
--   **Cross-Encoder Reranking**
-    -   The initial set of retrieved documents is passed through a powerful cross-encoder model. Unlike basic vector similarity, a cross-encoder directly compares the query and each document together, providing a much more accurate relevance score. This is a critical step to filter out noise and promote the best possible context for the LLM.
-
--   **Adaptive Context Strategy (The Core Innovation)**
-    -   This is the "adaptive" part of the engine. Instead of naively stuffing all retrieved documents into the prompt, the `ContextBuilder` uses the top reranker score to make an intelligent decision:
-        -   **High Confidence:** If the top document's score is above a set threshold, the engine assumes high relevance and provides the LLM with a rich context from multiple top documents.
-        -   **Low Confidence (Summarization for Distillation):** If the score is below the threshold, the engine assumes the context might be noisy. It summarizes the top few documents to distill the key facts, providing a concise and factually-grounded context to the LLM while minimizing distraction.
-        -   **No Confidence (Rejection):** If the score is critically low, the engine provides no context at all, preventing the LLM from hallucinating based on irrelevant information and allowing it to inform the user that the question is out of scope.
+-   **Query Expansion with HyDE (Hypothetical Document Embeddings)**: Before retrieval, the engine uses a smaller LLM to generate a hypothetical document that answers the user's question. Embedding both the query and this document significantly improves the semantic richness of the search.
+-   **Hybrid Search (Dense + Sparse Retrieval)**: The system combines the strengths of dense, semantic search (FAISS) with traditional sparse, keyword-based search (BM25) to ensure both meaning and specific terms are captured.
+-   **Cross-Encoder Reranking**: A powerful cross-encoder model directly compares the query and each retrieved document, providing a much more accurate relevance score to filter out noise and promote the best possible context.
+-   **Adaptive Context Strategy**: The engine uses the top reranker score to make an intelligent decision: provide a rich context for high-confidence results, summarize low-confidence results to distill key facts, or reject the context entirely to prevent hallucination.
 
 ## Technology Stack
 
@@ -126,23 +116,48 @@ Follow these steps to get the project up and running on your local machine.
 -   Python 3.9 or higher
 -   Git
 -   Access to a terminal or command prompt
----
 
-### 1. Clone & Configure
-
-First, clone the repository and navigate into the project directory.
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/KareemSayed1232/Decoupled-Adaptive-Rag-Engine.git
 cd Decoupled-Adaptive-Rag-Engine
 ```
 
-Next, create your local environment configuration from the example file.
+### 2. Configure Your Environment
+
+All project settings are managed in a single `.env` file. First, create your local copy from the example file:
 ```bash
 cp .env.example .env
 ```
-**Important:** Open the `.env` file and update `LLM_MODEL_PATH` and `HYDE_MODEL_PATH` to point to the correct locations of your GGUF model files.
+Next, open the `.env` file and modify the settings as needed.
 
-### 2. Install Dependencies
+#### **Required Settings**
+These paths **must be updated** to point to the location of your downloaded GGUF model files on your local machine.
+
+| Variable            | Description                                      | Example Value                               |
+|---------------------|--------------------------------------------------|---------------------------------------------|
+| `LLM_MODEL_PATH`    | Path to the main Large Language Model file.      | `data/models/guff/Qwen3-8B-Q5_K_M.gguf`       |
+| `HYDE_MODEL_PATH`   | Path to the smaller LLM used for HyDE.           | `data/models/guff/Phi-3-mini-4k-instruct-Q4_K_M.gguf` |
+
+These paths **must be updated** to point to the location of custom 'knowledge base' / 'data' on your local machine.
+
+| Variable                  | Description                                                                | Example Value |
+|---------------------------|----------------------------------------------------------------------------|---------------------------------------------|
+| `BASE_CONTEXT_FILE`       | Path to your base context which is an introduction about the business      | `data/base_context.txt`|
+| `COMPLETE_CONTEXT_FILE`   | Path to your complete context and full knowledge about the business        | `data/complete_context.txt` |
+
+#### **Performance & Behavior Tuning (Optional)**
+These parameters control the behavior of the RAG pipeline. The default values are a good starting point, but you can tune them for different results.
+
+| Variable                         | Description                                                              | Default |
+|----------------------------------|----------------------------------------------------------------------------|---------|
+| `RERANKER_REJECTION_THRESHOLD`   | The minimum score from the reranker to consider a document relevant.       | `0.3`   |
+| `SUMMARIZATION_MIN_DOCS`         | The number of low-confidence documents to summarize for context.           | `3`     |
+| `SS_TOP_K_NEIGHBORS`             | The number of initial documents to retrieve from search.                   | `10`    |
+| `GEN_MAX_TOKENS`                 | The maximum number of tokens the LLM can generate in a response.           | `1536`  |
+| `SUMMARIZATION_MIN_DOCS`         | The minimum number of chunks needed to be existing before start summarizing| `1536`  |
+
+### 3. Install Dependencies
 
 Dependencies are managed separately for each service.
 
@@ -154,14 +169,17 @@ pip install -e ./packages/shared-models
 pip install -r services/inference-api/requirements.txt
 pip install -r services/rag-api/requirements.txt
 pip install -r clients/gradio-demo/requirements.txt
+```
 
-### 3. Build Search Artifacts
+### 4. Build Search Artifacts
+
 Run the build script to process your source documents (`data/complete_context.md`) and create the necessary FAISS and BM25 indexes.
+```bash
 python scripts/build_index.py
 ```
 This will populate the `/services/inference_api/artifacts` directory.
 
-### 4. Run the Application
+### 5. Run the Application
 
 You need to run each of the three services in a **separate terminal**.
 
