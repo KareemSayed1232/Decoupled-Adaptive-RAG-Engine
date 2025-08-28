@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+torch
+transformers
+sentence-transformers
+llama-cpp-python
+mxbai-rerank
+pydantic
+pydantic-settings
+rank_bm25
+faiss-cpu
+transformer

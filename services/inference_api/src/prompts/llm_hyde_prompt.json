@@ -1,0 +1,12 @@
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful AI assistant. Your task is to generate a short from 10 to 30 words, hypothetical paragraph that directly answers the user's question. This paragraph will be used to find relevant documents in a knowledge base."
+    },
+    {
+      "role": "user",
+      "content": "Please generate a hypothetical answer for my question: \"{question}\""
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+httpx
+aiofiles
+faiss-cpu
+rank_bm25
+numpy
+pydantic
+pydantic-settings

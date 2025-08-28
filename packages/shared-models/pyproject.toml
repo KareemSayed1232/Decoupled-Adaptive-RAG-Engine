@@ -1,0 +1,5 @@
+
+[project]
+name = "shared_models"
+version = "0.1.0"
+dependencies = [ "pydantic>=2.0", "pydantic-settings>=2.0" ]
