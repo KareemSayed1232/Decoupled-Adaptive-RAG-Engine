@@ -168,7 +168,7 @@ pip install -e ./packages/shared-models
 # 2. Install dependencies for each service
 pip install -r services/inference_api/requirements.txt
 pip install -r services/rag_api/requirements.txt
-pip install -r clients/gradio_demo/requirements.txt
+pip install -r clients/gradio-demo/requirements.txt
 ```
 
 ### 4. Build Search Artifacts
