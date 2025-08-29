@@ -114,6 +114,8 @@ Follow these steps to get the project up and running on your local machine.
 ### Prerequisites
 
 -   Python 3.11 or higher
+-   Conda
+-   Cuda 12.4+
 -   Git
 -   Access to a terminal or command prompt
 
@@ -124,6 +126,52 @@ cd Decoupled-Adaptive-Rag-Engine
 ```
 
 ### 2. Configure Your Environment
+
+#### Create Environment
+
+```bash
+conda create -n rag_env python=3.11 -y
+conda activate rag_env
+```
+
+---
+
+#### 2. Install `llama-cpp-python` with GPU (CUDA 12.4+)
+
+To enable GPU acceleration, you need to compile `llama-cpp-python` from source with CUDA flags.
+
+Run the following inside the environment:
+
+```bash
+# set CUDA build flags (new GGML system)
+$env:CMAKE_ARGS="-DGGML_CUDA=on -DGGML_CUDA_F16=on"
+$env:FORCE_CMAKE="1"
+
+# install with CUDA support
+pip install --force-reinstall --upgrade --no-cache-dir llama-cpp-python --verbose
+```
+
+---
+
+#### 3. Verify GPU Support
+
+Run this test:
+
+```python
+from llama_cpp import llama_supports_gpu_offload
+print("CUDA enabled:", llama_supports_gpu_offload())
+```
+
+Expected output:
+
+```
+CUDA enabled: True
+```
+
+---
+
+
+
 
 All project settings are managed in a single `.env` file. First, create your local copy from the example file:
 ```bash
