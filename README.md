@@ -175,7 +175,7 @@ CUDA enabled: True
 
 All project settings are managed in a single `.env` file. First, create your local copy from the example file:
 ```bash
-cp .env.example .env
+Copy-Item .env.example .env
 ```
 Next, open the `.env` file and modify the settings as needed.
 
