@@ -1,7 +1,7 @@
 # Decoupled Adaptive RAG Engine
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/KareemSayed1232/Decoupled-Adaptive-Rag-Engine/blob/main/LICENSE)
-[![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![GitHub Stars](https://img.shields.io/github/stars/KareemSayed1232/Decoupled-Adaptive-Rag-Engine?style=social)](https://github.com/KareemSayed1232/Decoupled-Adaptive-Rag-Engine/stargazers)
 
@@ -113,7 +113,7 @@ Follow these steps to get the project up and running on your local machine.
 
 ### Prerequisites
 
--   Python 3.9 or higher
+-   Python 3.11 or higher
 -   Git
 -   Access to a terminal or command prompt
 
@@ -185,7 +185,7 @@ You need to run each of the three services in a **separate terminal**.
 
 | Terminal 1: **Inference API**                  | Terminal 2: **RAG API**                         | Terminal 3: **Gradio UI**                       |
 | ---------------------------------------------- | ----------------------------------------------- | ----------------------------------------------- |
-| `cd services/inference-api`                    | `cd services/rag-api`                           | `cd clients/gradio-demo`                        |
+| `cd services/inference_api`                    | `cd services/rag_api`                           | `cd clients/gradio-demo`                        |
 | `uvicorn src.main:app --port 8001`             | `uvicorn src.main:app --port 8000`              | `python app.py`                                 |
 
 Once all services are running, open your browser and navigate to the local URL provided by Gradio (usually `http://127.0.0.1:7860`).
