@@ -130,7 +130,6 @@ class LLMService:
     def generate_stream(self, question: str, context: str) -> Iterator[str]:
 
 
-        logger.info(">>>> RUNNING THE NEW, CORRECTED CODE VERSION! <<<<")
         
         logger.info(f"Starting DYNAMIC TOKEN stream for question: '{question[:50]}...'")
         

@@ -19,7 +19,7 @@ class RagApiSettings(BaseSettings):
     faiss_m: int
     faiss_nbits: int
     
-    
+    faiss_artifacts_path: str
     faiss_index_path: str = ""
     faiss_chunks_path: str = ""
     base_context_file: str = ""

@@ -10,7 +10,7 @@ from ..utils import logger, measure_performance
 
 class SimilarityService:
     def __init__(self):
-        self.faiss_index_path = PROJECT_ROOT / settings.faiss_index_path
+        self.faiss_index_path = Path(settings.faiss_artifacts_path).resolve() / settings.faiss_index_path
         self.ss_nprobe_neighbors = settings.ss_nprobe_neighbors
         self.faiss_ivf_min_vectors = settings.faiss_ivf_min_vectors
         self.faiss_nlist = settings.faiss_nlist
@@ -28,7 +28,7 @@ class SimilarityService:
         if self.index is not None:
             return
 
-        index_path = Path(self.faiss_index_path)
+        index_path = self.faiss_index_path
         logger.info(f"Attempting to load FAISS index from: {index_path.resolve()}")
 
         if not index_path.exists():
@@ -73,8 +73,9 @@ class SimilarityService:
         logger.info("--- SimilarityService: Building and saving new FAISS index ---")
         vectors_arr = np.asarray(vectors, dtype=np.float32)
         index = self._build_index(vectors_arr)
-        os.makedirs(os.path.dirname(self.faiss_index_path), exist_ok=True)
-        faiss.write_index(index, str(self.faiss_index_path))
+        loc = Path(settings.faiss_artifacts_path).resolve() / settings.faiss_index_path
+        os.makedirs(loc.parent , exist_ok=True)
+        faiss.write_index(index, str(loc))
         logger.info(f"FAISS index saved successfully to {self.faiss_index_path}")
 
     def _perform_search(self, query_arr: np.ndarray) -> Dict[str, List[Any]]:

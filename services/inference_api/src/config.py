@@ -12,7 +12,7 @@ class ProjectSettings(BaseSettings):
     llm_model_path : str
 
 
-    
+    faiss_artifacts_path: str
     faiss_index_path: str
     faiss_nlist: int     
     faiss_max_nlist: int     
@@ -70,7 +70,7 @@ class ProjectSettings(BaseSettings):
     ss_top_k_neighbors : int
     ss_nprobe_neighbors: int
 
-
+    
     model_config = ConfigDict(
         env_file=Path(__file__).resolve().parent.parent.parent.parent / ".env",
         extra="allow"

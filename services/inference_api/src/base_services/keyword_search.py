@@ -3,7 +3,7 @@ import pickle
 from rank_bm25 import BM25Okapi
 from ..config import settings
 from ..utils import logger, measure_performance
-
+from pathlib import Path
 class KeywordSearchService:
     def __init__(self):
         self._bm25_index = None
@@ -12,7 +12,7 @@ class KeywordSearchService:
         if self._bm25_index is not None:
             return
         
-        index_path = os.path.join(os.path.dirname(settings.faiss_index_path), 'bm25.index')
+        index_path = Path(settings.faiss_artifacts_path).resolve() / 'bm25.index'
         logger.info(f"Attempting to load BM25 index from: {index_path}")
         
         if not os.path.exists(index_path):

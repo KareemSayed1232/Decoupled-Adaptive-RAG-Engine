@@ -16,16 +16,17 @@ from services.inference_api.src.base_services.embedding import EmbeddingService
 from services.inference_api.src.base_services.search import SimilarityService
 from services.inference_api.src.utils import logger
 
-ARTIFACT_PATH = PROJECT_ROOT / "services" / "inference_api" / "artifacts"
+ARTIFACT_PATH = Path(inference_settings.faiss_artifacts_path).resolve()
 
 
 async def create_and_save_chunks(chunking_service: ChunkingService):
     logger.info("--- Step 1: Processing and Saving Document Chunks ---")
 
-    complete_context_path = PROJECT_ROOT / inference_settings.complete_context_file
-    chunks_path = ARTIFACT_PATH / "chunks.json"
-
+    complete_context_path = Path(inference_settings.complete_context_file).resolve()
+    chunks_path = ARTIFACT_PATH / inference_settings.faiss_chunks_path
+    
     with open(complete_context_path, 'r', encoding='utf-8') as f:
+
         complete_context = f.read()
 
     processed_context = await chunking_service.preprocess_text(complete_context)
