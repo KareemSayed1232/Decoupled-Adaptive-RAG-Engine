@@ -240,6 +240,7 @@ You need to run each of the three services in a **separate terminal**.
 
 | Terminal 1: **Inference API**                  | Terminal 2: **RAG API**                         | Terminal 3: **Gradio UI**                       |
 | ---------------------------------------------- | ----------------------------------------------- | ----------------------------------------------- |
+| `$env:KMP_DUPLICATE_LIB_OK="TRUE"`             | `$env:KMP_DUPLICATE_LIB_OK="TRUE"`              |                                                 |
 | `cd services/inference_api`                    | `cd services/rag_api`                           | `cd clients/gradio-demo`                        |
 | `uvicorn src.main:app --port 8001`             | `uvicorn src.main:app --port 8000`              | `python app.py`                                 |
 

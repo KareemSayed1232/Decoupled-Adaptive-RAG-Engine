@@ -11,7 +11,7 @@ from ..utils import logger, measure_performance
 class SimilarityService:
     def __init__(self):
         artifact_path = os.path.join(Path(PROJECT_ROOT) , Path(settings.faiss_artifacts_path ))
-        self.faiss_index_path =  Path(os.path.join(Path(artifact_path), Path(settings.faiss_index_path)))
+        self.faiss_index_path =  Path(os.path.join(Path(artifact_path), Path(settings.faiss_index_path)))   
         self.ss_nprobe_neighbors = settings.ss_nprobe_neighbors
         self.faiss_ivf_min_vectors = settings.faiss_ivf_min_vectors
         self.faiss_nlist = settings.faiss_nlist
@@ -31,9 +31,11 @@ class SimilarityService:
 
         index_path = self.faiss_index_path
         logger.info(f"Attempting to load FAISS index from: {index_path}")
+        logger.info(f"Attempting to load FAISS index from: {index_path}")
 
         if not index_path.exists():
             logger.error(
+                f"FAISS index file not found at {index_path} \n"
                 f"FAISS index file not found at {index_path} \n"
                 f"Please Build the index using the command `python scripts/build_index.py`"
             )
