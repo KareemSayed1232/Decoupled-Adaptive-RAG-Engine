@@ -179,7 +179,7 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu[YO
 # example for cuda 12.4: pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
 
 ```
-#### 5. Verify torch GPU Support
+#### 5. Verify Pytorch GPU Support
 
 Run this test:
 
