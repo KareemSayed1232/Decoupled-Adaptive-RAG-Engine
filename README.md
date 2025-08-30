@@ -118,6 +118,8 @@ Follow these steps to get the project up and running on your local machine.
 -   Cuda 12.4+
 -   Git
 -   Access to a terminal or command prompt
+-   Visual Studio Build tools
+
 
 ### 1. Clone the Repository
 ```bash
@@ -153,7 +155,7 @@ pip install --force-reinstall --upgrade --no-cache-dir llama-cpp-python --verbos
 
 ---
 
-#### 3. Verify GPU Support
+#### 3. Verify llama_cpp GPU Support
 
 Run this test:
 
@@ -177,7 +179,19 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu[YO
 # example for cuda 12.4: pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
 
 ```
+#### 5. Verify torch GPU Support
 
+Run this test:
+
+```python
+import torch
+print("CUDA enabled:", torch.cuda.is_available())
+```
+Expected output:
+
+```
+True
+```
 
 
 All project settings are managed in a single `.env` file. First, create your local copy from the example file:
