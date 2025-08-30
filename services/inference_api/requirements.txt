@@ -9,4 +9,4 @@ pydantic
 pydantic-settings
 rank_bm25
 faiss-cpu
-transformers[cuda]
+transformers
