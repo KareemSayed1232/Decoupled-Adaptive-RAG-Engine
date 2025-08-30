@@ -230,6 +230,7 @@ pip install -r clients/gradio-demo/requirements.txt
 
 Run the build script to process your source documents (`data/complete_context.md`) and create the necessary FAISS and BM25 indexes.
 ```bash
+$env:KMP_DUPLICATE_LIB_OK="TRUE"
 python scripts/build_index.py
 ```
 This will populate the `/services/inference_api/artifacts` directory.

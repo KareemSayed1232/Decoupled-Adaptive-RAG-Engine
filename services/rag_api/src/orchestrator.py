@@ -117,7 +117,7 @@ async def initialize_rag_system():
     chunks_path = os.path.join(Path(artifact_path), Path(settings.faiss_chunks_path))
 
     if Path(settings.base_context_file).is_absolute():
-        base_context_path = settings.base_context_path
+        base_context_path = settings.base_context_file
     else:
         base_context_path =  str(os.path.join(Path(PROJECT_ROOT) , Path(settings.base_context_file)))
     logger.info(base_context_path)
