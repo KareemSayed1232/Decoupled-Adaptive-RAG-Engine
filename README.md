@@ -169,7 +169,14 @@ CUDA enabled: True
 ```
 
 ---
+#### 4. Install Pytorch with cuda enabled
 
+```python
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu[YOUR CUDA VERSION]
+
+# example for cuda 12.4: pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+
+```
 
 
 
