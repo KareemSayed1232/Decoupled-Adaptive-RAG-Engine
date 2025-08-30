@@ -10,7 +10,7 @@ from shared_models.models import *
 from .utils import logger, measure_performance
 
 from pathlib import Path
-from .config import settings
+from .config import settings , PROJECT_ROOT
 
 class ContextBuilder:
     def __init__(self, client: InferenceAPIClient, base_context: str):
@@ -113,10 +113,11 @@ app_state = AppState()
 
 
 async def initialize_rag_system():
-    artifact_path = Path(settings.faiss_artifacts_path ).resolve()
+    artifact_path = os.path.join(Path(PROJECT_ROOT) , Path(settings.faiss_artifacts_path ))
     
-    chunks_path = os.path.join(artifact_path, 'chunks.json')
-    base_context_path = Path(settings.base_context_file).resolve()
+    chunks_path = os.path.join(Path(artifact_path), Path(settings.faiss_chunks_path))
+    base_context_path =  os.path.join(Path(artifact_path), Path(settings.faiss_chunks_path))
+    logger.info(base_context_path)
     
     async with aiofiles.open(chunks_path, 'r', encoding='utf-8') as f:
         chunks = json.loads(await f.read())
