@@ -1,7 +1,7 @@
 import os
 import pickle
 from rank_bm25 import BM25Okapi
-from ..config import settings
+from ..config import settings , PROJECT_ROOT
 from ..utils import logger, measure_performance
 from pathlib import Path
 class KeywordSearchService:
@@ -12,7 +12,7 @@ class KeywordSearchService:
         if self._bm25_index is not None:
             return
         
-        index_path = Path(settings.faiss_artifacts_path).resolve() / 'bm25.index'
+        index_path = Path(PROJECT_ROOT) / Path(settings.faiss_artifacts_path) / 'bm25.index'
         logger.info(f"Attempting to load BM25 index from: {index_path}")
         
         if not os.path.exists(index_path):
@@ -26,7 +26,6 @@ class KeywordSearchService:
 
     @measure_performance(unit="ms")
     def search(self, query: str, top_k: int) -> list[int]:
-        # ➕ The check is added here. The index is loaded on the first search.
         if self._bm25_index is None:
             self._load_index()
 
