@@ -13,13 +13,15 @@ A powerful, adaptive Retrieval-Augmented Generation (RAG) system built with a de
 - [Key Features](#key-features)
 - [RAG Techniques and Innovations](#rag-techniques-and-innovations)
 - [Technology Stack](#technology-stack)
-- [Getting Started](#getting-started)
+- [Getting Started on Windows](#getting-started-on-windows)
   - [Prerequisites](#prerequisites)
-  - [1. Clone the Repository](#1-clone-the-repository)
-  - [2. Configure Your Environment](#2-configure-your-environment)
-  - [3. Install Dependencies](#3-install-dependencies)
-  - [4. Build Search Artifacts](#4-build-search-artifacts)
-  - [5. Run the Application](#5-run-the-application)
+  - [Step 1: System-Level Setup (C++ & CUDA)](#step-1-system-level-setup-c--cuda)
+  - [Step 2: Project & Environment Setup](#step-2-project--environment-setup)
+  - [Step 3: Install Core AI Dependencies](#step-3-install-core-ai-dependencies)
+  - [Step 4: Configure the Project](#step-4-configure-the-project)
+  - [Step 5: Install Project Dependencies](#step-5-install-project-dependencies)
+  - [Step 6: Build Search Artifacts](#step-6-build-search-artifacts)
+  - [Step 7: Run the Application](#step-7-run-the-application)
 - [Project Structure](#project-structure)
 - [Contributing](#contributing)
 - [License](#license)
@@ -107,99 +109,107 @@ This project is built with a modern stack of technologies, chosen for performanc
 | **Data & Configuration**  | `Pydantic`, `pydantic-settings`                                                   | Data validation, type safety in APIs, and environment configuration.  |
 | **Communication**         | `HTTPX`                                                                           | Asynchronous HTTP client for communication between services.          |
 
-## Getting Started
+## Getting Started on Windows
 
-Follow these steps to get the project up and running on your local machine.
+This guide provides a detailed, step-by-step process to ensure a smooth setup on Windows, avoiding common compilation and environment issues.
 
 ### Prerequisites
 
--   Python 3.11 or higher
--   Conda
--   Cuda 12.4+
--   Git
--   Access to a terminal or command prompt
--   Visual Studio Build tools
+-   An NVIDIA GPU with CUDA support.
+-   **Git**: [Download here](https://git-scm.com/download/win)
+-   **Conda (Miniconda)**: [Download here](https://docs.anaconda.com/free/miniconda/miniconda-install/)
+-   **Python 3.11**: Will be installed via Conda.
 
+### Step 1: System-Level Setup (C++ & CUDA)
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/KareemSayed1232/Decoupled-Adaptive-Rag-Engine.git
-cd Decoupled-Adaptive-Rag-Engine
-```
+Correctly installing the C++ compiler and CUDA Toolkit is the most critical step.
 
-### 2. Configure Your Environment
+#### 1. Install Visual Studio 2022
 
-#### Create Environment
+`llama-cpp-python` requires a C++ compiler.
 
-```bash
-conda create -n rag_env python=3.11 -y
-conda activate rag_env
-```
+1.  Download the **Visual Studio 2022 Community** installer from the [official website](https://visualstudio.microsoft.com/downloads/).
+2.  Run the installer. On the **Workloads** tab, select **"Desktop development with C++"**.
+3.  **Do not click Install yet.** Go to the **Individual components** tab.
+4.  Find and select an older C++ toolset for maximum compatibility with CUDA. A good choice is **"MSVC v143 - VS 2022 C++ x64/x86 build tools (v14.38...)"**. This ensures that even if CUDA doesn't support the absolute latest compiler, a compatible one is available.
+5.  Click **Install** and wait for the process to complete.
 
----
+#### 2. Install NVIDIA CUDA Toolkit
 
-#### 2. Install `llama-cpp-python` with GPU (CUDA 12.4+)
+1.  Check your NVIDIA driver's supported CUDA version by opening PowerShell and running `nvidia-smi`.
+2.  Download the matching **CUDA Toolkit** (e.g., v12.4) from the [NVIDIA Developer website](https://developer.nvidia.com/cuda-toolkit-archive).
+3.  Run the installer. When prompted, choose the **Custom (Advanced)** installation.
+4.  Ensure that **"Visual Studio Integration"** is checked. This is crucial.
+5.  Complete the installation. A system reboot is recommended.
 
-To enable GPU acceleration, you need to compile `llama-cpp-python` from source with CUDA flags.
+### Step 2: Project & Environment Setup
 
-Run the following inside the environment:
+1.  **Clone the Repository**
+    Open a terminal (like PowerShell or Command Prompt) and run:
+    ```bash
+    git clone https://github.com/KareemSayed1232/Decoupled-Adaptive-Rag-Engine.git
+    cd Decoupled-Adaptive-Rag-Engine
+    ```
 
-```bash
-# set CUDA build flags (new GGML system)
-$env:CMAKE_ARGS="-DGGML_CUDA=on -DGGML_CUDA_F16=on"
+2.  **Create and Activate Conda Environment**
+    ```bash
+    conda create -n rag_env python=3.11 -y
+    conda activate rag_env
+    ```
+
+### Step 3: Install Core AI Dependencies
+
+These packages require special compilation flags to enable GPU acceleration.
+
+> **Note:** All the following commands should be run in a terminal **with the `rag_env` environment activated**.
+
+#### 1. Install `llama-cpp-python` with GPU Support
+
+This step compiles the library to use your NVIDIA GPU.
+
+```powershell
+# Set environment variables for the build process (PowerShell syntax)
+$env:CMAKE_ARGS="-DGGML_CUDA=on"
 $env:FORCE_CMAKE="1"
 
-# install with CUDA support
-pip install --force-reinstall --upgrade --no-cache-dir llama-cpp-python --verbose
+# Install the package with verbose output to see the build process
+pip install --force-reinstall --no-cache-dir llama-cpp-python
 ```
 
----
-
-#### 3. Verify llama_cpp GPU Support
-
-Run this test:
-
-```python
-from llama_cpp import llama_supports_gpu_offload
-print("CUDA enabled:", llama_supports_gpu_offload())
+**Verification:** Run this Python command to confirm success.
+```powershell
+python -c "from llama_cpp import llama_supports_gpu_offload; print(f'llama-cpp-python CUDA support: {llama_supports_gpu_offload()}')"
 ```
+You should see: `llama-cpp-python CUDA support: True`
 
-Expected output:
+#### 2. Install PyTorch with GPU Support
 
+PyTorch is needed for the embedding and reranker models.
+
+1.  Find your CUDA version (e.g., 12.4).
+2.  Go to the [PyTorch website](https://pytorch.org/get-started/locally/) and find the correct installation command for your system (select Pip, your OS, and your CUDA version).
+3.  Run the command. For CUDA 12.4, it would be:
+    ```bash
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+    ```
+
+**Verification:** Run this Python command to confirm success.
+```powershell
+python -c "import torch; print(f'PyTorch CUDA support: {torch.cuda.is_available()}')"
 ```
-CUDA enabled: True
-```
+You should see: `PyTorch CUDA support: True`
 
----
-#### 4. Install Pytorch with cuda enabled
+### Step 4: Configure the Project
 
-```python
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu[YOUR CUDA VERSION]
+All project settings are managed in a single `.env` file.
 
-# example for cuda 12.4: pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
-
-```
-#### 5. Verify Pytorch GPU Support
-
-Run this test:
-
-```python
-import torch
-print("CUDA enabled:", torch.cuda.is_available())
-```
-Expected output:
-
-```
-True
-```
-
-
-All project settings are managed in a single `.env` file. First, create your local copy from the example file:
-```bash
-Copy-Item .env.example .env
-```
-Next, open the `.env` file and modify the settings as needed.
-
+1.  Create your local copy from the example file:
+    ```powershell
+    # In PowerShell
+    Copy-Item .env.example .env
+    ```
+2.  Open the new `.env` file in a text editor.
+3.  **Update the required paths** 
 #### **Required Settings**
 These paths **must be updated** to point to the location of your downloaded GGUF model files on your local machine.
 
@@ -214,24 +224,12 @@ These paths **must be updated** to point to the location of custom 'knowledge ba
 |---------------------------|----------------------------------------------------------------------------|---------------------------------------------|
 | `BASE_CONTEXT_FILE`       | Path to your base context which is an introduction about the business      | `data/base_context.txt`|
 | `COMPLETE_CONTEXT_FILE`   | Path to your complete context and full knowledge about the business        | `data/complete_context.txt` |
+### Step 5: Install Project Dependencies
 
-#### **Performance & Behavior Tuning (Optional)**
-These parameters control the behavior of the RAG pipeline. The default values are a good starting point, but you can tune them for different results.
-
-| Variable                         | Description                                                              | Default |
-|----------------------------------|----------------------------------------------------------------------------|---------|
-| `RERANKER_REJECTION_THRESHOLD`   | The minimum score from the reranker to consider a document relevant.       | `0.3`   |
-| `SUMMARIZATION_MIN_DOCS`         | The number of low-confidence documents to summarize for context.           | `3`     |
-| `SS_TOP_K_NEIGHBORS`             | The number of initial documents to retrieve from search.                   | `10`    |
-| `GEN_MAX_TOKENS`                 | The maximum number of tokens the LLM can generate in a response.           | `1536`  |
-| `SUMMARIZATION_MIN_DOCS`         | The minimum number of chunks needed to be existing before start summarizing| `1536`  |
-
-### 3. Install Dependencies
-
-Dependencies are managed separately for each service.
+With the core AI libraries installed, install the remaining application packages.
 
 ```bash
-# 1. Install the shared data models package
+# 1. Install the shared data models package (editable mode)
 pip install -e ./packages/shared-models
 
 # 2. Install dependencies for each service
@@ -240,22 +238,27 @@ pip install -r services/rag_api/requirements.txt
 pip install -r clients/gradio-demo/requirements.txt
 ```
 
-### 4. Build Search Artifacts
+### Step 6: Build Search Artifacts
 
-Run the build script to process your source documents (`data/complete_context.md`) and create the necessary FAISS and BM25 indexes.
-```bash
+This script processes your source documents and creates the search indexes.
+
+```powershell
+# This environment variable can prevent errors with some underlying libraries on Windows
 $env:KMP_DUPLICATE_LIB_OK="TRUE"
+
+# Run the build script
 python scripts/build_index.py
 ```
-This will populate the `/services/inference_api/artifacts` directory.
+This will create `faiss.index` and `bm25.index` in the `/services/inference_api/artifacts` directory.
 
-### 5. Run the Application
+### Step 7: Run the Application
 
-You need to run each of the three services in a **separate terminal**.
+You need to run each of the three services in a **separate terminal**. Make sure the `rag_env` conda environment is activated in each one.
 
 | Terminal 1: **Inference API**                  | Terminal 2: **RAG API**                         | Terminal 3: **Gradio UI**                       |
 | ---------------------------------------------- | ----------------------------------------------- | ----------------------------------------------- |
-| `$env:KMP_DUPLICATE_LIB_OK="TRUE"`             | `$env:KMP_DUPLICATE_LIB_OK="TRUE"`              |                                                 |
+| `conda activate rag_env`                       | `conda activate rag_env`                        | `conda activate rag_env`                        |
+| `$env:KMP_DUPLICATE_LIB_OK="TRUE"`             |  `$env:KMP_DUPLICATE_LIB_OK="TRUE"`             |                                                 |
 | `cd services/inference_api`                    | `cd services/rag_api`                           | `cd clients/gradio-demo`                        |
 | `uvicorn src.main:app --port 8001`             | `uvicorn src.main:app --port 8000`              | `python app.py`                                 |
 
