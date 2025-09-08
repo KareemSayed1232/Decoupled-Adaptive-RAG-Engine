@@ -255,7 +255,7 @@ python -c "from llama_cpp import llama_supports_gpu_offload; print(f'llama.cpp G
 1.  **Install Project Python Packages:**
     ```bash
     # Install the shared data models package first
-    pip install -e ./packages/shared-models
+    pip install ./packages/shared-models
 
     # Install dependencies for each service
     pip install -r services/inference_api/requirements.txt

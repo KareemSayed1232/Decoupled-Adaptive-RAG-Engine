@@ -4,7 +4,7 @@ from pydantic import BaseModel, ValidationError
 from ..loader import ModelLoader, PromptLoader
 from ..config import settings
 from ..utils import logger, measure_performance
-from shared_models.models import HydeGenerationResponse , GeneratedAnswerContainer , HydeResponse
+from shared_models.models import HydeGenerationResponse , GeneratedAnswerContainer 
 import json
 
 
@@ -102,7 +102,7 @@ class LLMService:
         try:
 
             
-            schema_str = json.dumps(HydeResponse.model_json_schema())
+            schema_str = json.dumps(HydeGenerationResponse.model_json_schema())
             messages = self._format_messages(
                 self.hyde_prompt_template,
                 question=question,
@@ -114,7 +114,7 @@ class LLMService:
         structured_response = self._create_structured_output(
             llama_instance=self.hyde_llm,
             messages=messages,
-            response_model=HydeResponse,
+            response_model=HydeGenerationResponse,
             temperature=self.hyde_temperature,
             max_tokens=self.hyde_max_new_tokens,
             top_p=self.hyde_top_p,

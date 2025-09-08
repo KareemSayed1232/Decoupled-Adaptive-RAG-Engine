@@ -1,6 +1,7 @@
 from typing import List, Annotated, Optional , Union
 from pydantic import BaseModel, Field, field_validator , model_validator , ConfigDict
 
+
 class ChunkingRequest(BaseModel):
     text: Annotated[str, Field(min_length=1, description="Text to be chunked.")]
 
@@ -10,9 +11,18 @@ class ChunkingRequest(BaseModel):
         if not v.strip():
             raise ValueError('text must not be empty or just whitespace')
         return v
-
+    
 class ChunkingResponse(BaseModel):
     texts: Annotated[List[str], Field(min_length=1, description="List of chunked text pieces.")]
+
+
+
+
+
+
+
+
+
 
 
 class PreprocessRequest(BaseModel):
@@ -29,6 +39,15 @@ class PreprocessResponse(BaseModel):
     text: str
 
 
+
+
+
+
+
+
+
+
+
 class EmbeddingRequest(BaseModel):
     texts: Annotated[List[str], Field(min_length=1, description="List of texts to embed.")]
 
@@ -41,6 +60,15 @@ class EmbeddingRequest(BaseModel):
 
 class EmbeddingResponse(BaseModel):
     embeddings: Annotated[List[List[float]], Field(min_length=1, description="List of embedding vectors.")]
+    
+
+
+
+
+
+
+
+
 
 
 class HydeGenerationRequest(BaseModel):
@@ -60,6 +88,15 @@ class HydeGenerationResponse(BaseModel):
     )]
 
 
+
+
+
+
+
+
+
+
+
 class GenerationStreamRequest(BaseModel):
     question: Annotated[str, Field(min_length=1)]
     context: Annotated[str, Field(min_length=1)]
@@ -75,8 +112,6 @@ class StreamValidationError(BaseModel):
     error: str
     raw_text: str
     
-
-
 
 class LayoutDetailed(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -106,8 +141,15 @@ class GeneratedAnswerContainer(BaseModel):
 
 GeneratedAnswer = Union[LayoutDetailed, LayoutTextOnly, LayoutBrief]
 
-class HydeResponse(BaseModel):
-    hypothetical_document: str
+
+
+
+
+
+
+
+
+
 
 
 class RerankRequest(BaseModel):
@@ -136,6 +178,16 @@ class RerankResponse(BaseModel):
     reranked_results: Annotated[List[RerankedResult], Field(min_length=0)]
 
 
+
+
+
+
+
+
+
+
+
+
 class SimilaritySearchRequest(BaseModel):
     query: Annotated[List[List[float]], Field(min_length=1, description="List of query vectors for similarity search.")]
     
@@ -145,11 +197,28 @@ class SimilaritySearchResponse(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
+
 class KeywordSearchRequest(BaseModel):
     query: Annotated[str, Field(min_length=1)]
 
 class KeywordSearchResponse(BaseModel):
     indices: Annotated[List[int], Field(min_length=0)]
+
+
+
+
+
+
+
+
 
 
 
