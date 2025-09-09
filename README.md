@@ -146,7 +146,7 @@ Correctly installing the C++ compiler and CUDA Toolkit is the most critical step
 2.  Download the matching **CUDA Toolkit** from the [NVIDIA Developer website](https://developer.nvidia.com/cuda-toolkit-archive).
 3.  Run the installer. When prompted, choose the **Custom (Advanced)** installation.
 4.  Ensure that **"Visual Studio Integration"** is checked. This is crucial for the toolkit to find your C++ compiler.
-5.  Complete the installation. A system reboot is recommended.
+5.  Rebooting the system is required after the installtion.
 
 ### Step 2: Project & Environment Setup
 
@@ -180,7 +180,8 @@ These packages need to be installed carefully to enable GPU acceleration.
 3.  **Verify:** `python -c "import torch; print(f'PyTorch CUDA available: {torch.cuda.is_available()}')"`
     > You should see: `PyTorch CUDA available: True`
 
-#### 2. Install `llama-cpp-python` with CUDA Support
+#### 2. Install `llama-cpp-python` with **CUDA Support**
+
 
 **Always try Option 1 first**. It's the fastest and easiest method.
 
@@ -221,7 +222,8 @@ Use this method **only if Option 1 fails** or if a pre-built wheel is not availa
 ```powershell
 python -c "from llama_cpp import llama_supports_gpu_offload; print(f'llama.cpp GPU offload enabled: {llama_supports_gpu_offload()}')"
 ```
-> You should see: `llama.cpp GPU offload enabled: True`
+> You should see: `llama.cpp GPU offload enabled: True`  
+> *`Use Option 2 if llama.cpp GPU offload enabled: False`*
 
 ### Step 4: Configure the Project
 
