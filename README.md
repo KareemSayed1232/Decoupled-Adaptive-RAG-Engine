@@ -186,7 +186,7 @@ These packages need to be installed carefully to enable GPU acceleration.
 **Always try Option 1 first**. It's the fastest and easiest method.
 
 <details>
-<summary><strong>Option 1: Install Pre-built Wheel (Recommended)</strong></summary>
+<summary><strong>Option 1: Install Pre-built Wheel</strong></summary>
 
 The library maintainers at [pypi](https://pypi.org/project/llama-cpp-python/) provide *Pre-built Wheel* for multiple CUDA versions.
 
