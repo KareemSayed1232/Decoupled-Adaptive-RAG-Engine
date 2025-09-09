@@ -146,7 +146,7 @@ Correctly installing the C++ compiler and CUDA Toolkit is the most critical step
 2.  Download the matching **CUDA Toolkit** from the [NVIDIA Developer website](https://developer.nvidia.com/cuda-toolkit-archive).
 3.  Run the installer. When prompted, choose the **Custom (Advanced)** installation.
 4.  Ensure that **"Visual Studio Integration"** is checked. This is crucial for the toolkit to find your C++ compiler.
-5.  Rebooting the system is required after the installtion.
+5.  Rebooting the system is required after the installation.
 
 ### Step 2: Project & Environment Setup
 
