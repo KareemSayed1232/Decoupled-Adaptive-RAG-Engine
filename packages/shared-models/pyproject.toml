@@ -1,5 +1,16 @@
+[build-system]
+requires = ["setuptools>=68.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
-name = "shared_models"
+name = "shared-models"
 version = "0.1.0"
-dependencies = [ "pydantic>=2.0", "pydantic-settings>=2.0" ]
+description = "Shared models package"
+requires-python = ">=3.8"
+dependencies = [
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0"
+]
+
+[tool.setuptools]
+packages = ["shared_models"]

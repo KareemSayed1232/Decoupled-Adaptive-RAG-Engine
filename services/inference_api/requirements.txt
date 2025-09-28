@@ -1,9 +1,8 @@
 fastapi
 uvicorn
-torch
-transformers
+# torch
 sentence-transformers
-llama-cpp-python
+# llama-cpp-python
 mxbai-rerank
 pydantic
 pydantic-settings

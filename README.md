@@ -195,7 +195,8 @@ The library maintainers at [pypi](https://pypi.org/project/llama-cpp-python/) pr
 1.  Currently to Install the package, telling pip to look for the correct pre-built wheel. **Replace `cu124` below with your CUDA version** (e.g., `cu124`, `cu125`).
     ```python
     # Example for CUDA 12.4
-    pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124```
+    pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124
+    ```
 
 2.  If this command succeeds without errors, you are done with this step.
 

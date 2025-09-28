@@ -1,0 +1,12 @@
+FROM python:3.11-slim-bullseye
+
+WORKDIR /app
+
+COPY  clients/gradio-demo/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY clients/gradio-demo .
+
+EXPOSE 7860
+
+CMD ["python3", "app.py"]

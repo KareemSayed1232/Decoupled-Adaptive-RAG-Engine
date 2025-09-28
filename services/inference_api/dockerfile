@@ -1,0 +1,39 @@
+# STAGE 2: Runtime — slim and clean
+FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04
+
+ARG PYTHON_VERSION=3.10
+ARG APP_USER=appuser
+ARG APP_UID=1001
+
+RUN groupadd -r ${APP_USER} -g ${APP_UID} && \
+    useradd -r -g ${APP_USER} -u ${APP_UID} -m -s /bin/bash ${APP_USER}
+
+WORKDIR /app
+
+# Install minimal Python runtime
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python${PYTHON_VERSION} \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/* && apt-get clean
+
+# ✅ COPY FROM CORRECT PATH — /usr/lib/... not /usr/local/lib/...
+COPY --from=builder /usr/lib/python${PYTHON_VERSION}/site-packages /usr/lib/python${PYTHON_VERSION}/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Copy app code
+COPY --chown=${APP_USER}:${APP_USER} services/inference_api ./services/inference_api
+
+ENV PYTHONPATH=/app \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+USER ${APP_USER}
+
+HEALTHCHECK --interval=30s --timeout=30s --start-period=60s --retries=3 \
+    CMD python3 -c "import requests; requests.get('http://localhost:8001/health', timeout=10)" || exit 1
+
+EXPOSE 8001
+
+CMD ["python3", "-m", "uvicorn", "services.inference_api.src.main:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "1", "--access-log"]

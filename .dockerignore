@@ -1,0 +1,13 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+*.log
+.env
+README.md
+LICENSE
+artifacts/
+data/
+scripts/
+clients/
+packages/shared-models/.venv

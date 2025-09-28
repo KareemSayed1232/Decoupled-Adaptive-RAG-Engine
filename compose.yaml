@@ -1,0 +1,80 @@
+services:
+  build_index:
+    build:
+      context: .
+      dockerfile: services/inference_api/Dockerfile
+    container_name: build_index
+    command: python3 /project/scripts/build_index.py
+    env_file:
+      - .env
+    volumes:
+      - ./data:/project/data
+      - ./packages/shared-models:/project/packages/shared-models
+      - ./scripts:/project/scripts
+      - ./artifacts:/project/artifacts  # Ensure this maps to the correct location
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    restart: "no"
+
+  inference_api:
+    build:
+      context: .
+      dockerfile: services/inference_api/Dockerfile
+    container_name: inference_api
+    command: >
+      uvicorn services.inference_api.src.main:app
+      --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./packages/shared-models:/project/packages/shared-models
+      - ./scripts:/app/scripts
+      - ./artifacts:/app/artifacts  # Add this line
+    depends_on:
+      build_index:
+        condition: service_completed_successfully
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    restart: unless-stopped
+
+  rag_api:
+    build:
+      context: .
+      dockerfile: services/rag_api/Dockerfile
+    container_name: rag_api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - INFERENCE_API_URL=http://inference_api:8001
+    depends_on:
+      build_index:
+        condition: service_completed_successfully
+      inference_api:
+        condition: service_started
+    volumes:
+      - ./data:/data  # Map to /data to match the code expectation
+      - ./packages/shared-models:/app/p ackages/shared-models
+      - ./artifacts:/artifacts
+    restart: unless-stopped
+
+  client:
+    build:
+      context: .
+      dockerfile: clients/gradio-demo/Dockerfile
+    container_name: client
+    ports:
+      - "7860:7860"
+    environment:
+      - RAG_API_URL=http://rag_api:8000
+    restart: unless-stopped

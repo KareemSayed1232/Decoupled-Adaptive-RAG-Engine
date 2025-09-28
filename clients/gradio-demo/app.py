@@ -260,4 +260,4 @@ with gr.Blocks(css=custom_css, theme=gr.themes.Default(primary_hue="indigo")) as
     )
 
 if __name__ == "__main__":
-    demo.launch(share=True)
+    demo.launch(server_name="0.0.0.0", server_port=7860, share=False)
